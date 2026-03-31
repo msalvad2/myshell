@@ -1,2 +1,4 @@
 myshell
 src/*.o
+*.txt
+*.o

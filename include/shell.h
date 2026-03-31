@@ -7,4 +7,11 @@
 #define PROMPT "myshell> "
 #define SHELL_NAME "myshell"
 
+typedef struct{
+    char ** argv;
+    char * infile;
+    char * outfile;
+    int append;
+} cmd_t;
+
 #endif

@@ -1,5 +1,7 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-char ** parse_input(char* input);
+#include "shell.h"
+
+cmd_t* parse_input(char* input);
 #endif
