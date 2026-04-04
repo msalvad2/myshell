@@ -3,5 +3,7 @@
 
 #include "shell.h"
 
-cmd_t* parse_input(char* input);
+cmd_t parse_input(char* input);
+pipeline_t parse_pipeline(char * input);
+
 #endif

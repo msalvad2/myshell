@@ -20,26 +20,36 @@ int main(void){
             break;
         // remove the /n after user input
         //input[strcspn(input, "\n")] = '\0';
-        cmd_t* cmd = parse_input(input);
-        if (cmd == NULL) continue;
+
+        pipeline_t pipeline = parse_pipeline(input);
 
         // if user entered space, enter, or tab only
-        if (cmd->argv == NULL || cmd->argv[0] == NULL){
-            free(cmd->argv);
-            free(cmd);
+        if (pipeline.cmds[0].argv == NULL || pipeline.cmds[0].argv[0] == NULL){
+            free(pipeline.cmds[0].argv);
             continue;
         }
 
-        //changes current process state
-        if(is_builtin(cmd->argv[0]))
-            run_builtin(cmd->argv);
-        //will create a child process to complete task
-        else{
-            execute_simple(cmd);
+        if( pipeline.num_cmds == 1){
+            //will change current process state
+            if (is_builtin(pipeline.cmds[0].argv[0])){
+                run_builtin(pipeline.cmds[0].argv);
+            }
+            //No pipes
+            else{
+                execute_simple(&pipeline.cmds[0]);
+            }
         }
+        //pipes
+        else{
+            execute_pipeline(&pipeline);
+        }
+        
+        for ( int i = 0; i < pipeline.num_cmds; ++i){
+            free(pipeline.cmds[i].argv);
+        }
+ 
 
-        free(cmd->argv);
-        free(cmd);
+
     }
 
 
