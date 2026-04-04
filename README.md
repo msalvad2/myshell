@@ -28,11 +28,11 @@ make valgrind # run under valgrind for memory checking
 
 | File | Responsibility |
 |------|----------------|
-| src/main.c | REPL loop — reads input until EOF, routes to parser and executor |
-| src/parser.c | Tokenizes raw input string into an argv array using strtok |
-| src/executor.c | Forks a child process and execs the parsed command via execvp |
+| src/main.c | REPL loop — reads input, routes to parser and executor |
+| src/parser.c | Splits input on | into pipeline_t, parses each segment into cmd_t with argv, infile, outfile using strtok_r |
+| src/executor.c | Executes single commands via fork/exec/waitpid and pipelines via pipe/dup2 |
 | src/builtins.c | Handles commands that must run in the shell process itself (cd, exit) |
-| include/shell.h | Shared constants — MAX_INPUT, MAX_ARGS, PROMPT, SHELL_NAME |
+| include/shell.h | Shared constants and structs — cmd_t, pipeline_t, MAX_INPUT, MAX_ARGS |
 
 ## Design decisions
 
@@ -45,15 +45,32 @@ the shell's working directory would be completely unaffected.
 Separation of concerns — each module has one job and can be tested
 independently. Changing how input is parsed never touches execution logic.
 
+## Features
+- Command execution via fork/exec/waitpid
+- I/O redirection — `>`, `>>`, `<`
+- Command pipelines — `cmd1 | cmd2 | cmd3`
+- Built-in commands — `cd`, `exit`
+
 ## Status
 
-| Milestone | Description | Status |
-|-----------|-------------|--------|
-| M0 | Project structure, Makefile, REPL loop | Complete |
-| M1 | Command execution — fork, exec, waitpid | In progress |
-| M2 | I/O redirection | Planned |
-| M3 | Pipes | Planned |
-| M4 | Signals and job control | Planned |
+| Milestone | Description                        | Status   |
+|-----------|------------------------------------|----------|
+| M0        | Project structure, Makefile, REPL  | Complete |
+| M1        | Command execution — fork/exec/waitpid | Complete |
+| M2        | I/O redirection                    | Complete |
+| M3        | Pipes                              | Complete |
+| M4        | Signals and job control            | Planned  |
+| M5        | Polish, testing, Valgrind          | Planned  |
+
+## What I learned
+- How fork and exec are separate syscalls — and why that gap exists
+  for fd manipulation before exec
+- How dup2 rewires file descriptors transparently so programs never
+  know about redirection
+- How pipe reference counts control EOF delivery — and why every
+  unused pipe end must be closed
+- Why strtok is not reentrant and how strtok_r solves it
+- Why builtins like cd must run in the shell process itself
 
 ## Author
 
