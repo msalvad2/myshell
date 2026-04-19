@@ -4,9 +4,10 @@
 #include <unistd.h> // chdir (change directory)
 #include "shell.h" 
 #include "builtins.h"
+#include "jobs.h"
 
 int is_builtin(char * input){
-    if(strcmp(input, "cd") == 0 || strcmp(input, "exit") == 0)
+    if(strcmp(input, "cd") == 0 || strcmp(input, "exit") == 0 || strcmp(input, "jobs") == 0)
         return 1;
     else
         return 0;
@@ -34,6 +35,11 @@ int run_builtin(char **input){
             return 1;
         }
             
+   }
+   // user types jobs
+   else if (strcmp(input[0], "jobs") == 0){
+    print_all_jobs();
+    return 0;
    }
    else{
     printf("Error has occured");

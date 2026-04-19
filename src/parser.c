@@ -68,13 +68,23 @@ cmd_t parse_input(char * input){
 pipeline_t parse_pipeline(char * input){
     pipeline_t pipeline;
     pipeline.num_cmds = 0;
+    pipeline.background = 0;
+
+    if (!input) return pipeline;
+
+    //checks to see if input has &
+    char *background = strchr(input, '&');
+    
+    //background job
+    if (background){
+        *background = '\0';
+        pipeline.background = 1;
+    }
     // holds the segment of input
     char * segment;
     char * saveptr;
 
-    if (!input){
-        return pipeline;
-    }
+
 
     segment = strtok_r(input, "|", &saveptr);
 

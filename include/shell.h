@@ -18,6 +18,8 @@ typedef struct{
 typedef struct{
     cmd_t cmds[MAX_CMDS];
     int num_cmds;
+    // 1 - background job "&" | 0 - foreground
+    int background; 
 } pipeline_t;
 
 #endif

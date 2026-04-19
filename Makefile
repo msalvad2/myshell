@@ -1,21 +1,13 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -g -Iinclude
+SRC = $(wildcard src/*.c)
+OBJ = $(SRC:.c=.o)
 
-myshell: src/builtins.o src/executor.o src/main.o src/parser.o
-	$(CC) $(CFLAGS)  -o $@ $^
+myshell: $(OBJ)
+	$(CC) $(CFLAGS) -o $@ $^
 
-src/builtins.o: src/builtins.c 
+%.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-
-src/executor.o: src/executor.c
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-src/main.o: src/main.c
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-src/parser.o: src/parser.c
-	$(CC) $(CFLAGS) -c -o $@ $<
-
 
 .PHONY: clean valgrind
 
