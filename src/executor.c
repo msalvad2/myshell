@@ -21,7 +21,7 @@ void execute_simple(pipeline_t* pipeline, char* cmd_original){
         return;
     }
 
-
+    // child 
     if (pid == 0){
         //child
         //create new program with execvp and check for failure

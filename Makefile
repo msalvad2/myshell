@@ -4,7 +4,7 @@ SRC = $(wildcard src/*.c)
 OBJ = $(SRC:.c=.o)
 
 myshell: $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ -lreadline
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<

@@ -49,7 +49,11 @@ independently. Changing how input is parsed never touches execution logic.
 - Command execution via fork/exec/waitpid
 - I/O redirection — `>`, `>>`, `<`
 - Command pipelines — `cmd1 | cmd2 | cmd3`
-- Built-in commands — `cd`, `exit`
+- Built-in commands — `cd`, `exit`, `jobs`
+- Signal handling — Ctrl+C kills jobs, not the shell
+- Job control — background jobs with &, jobs builtin
+- Done notifications — background job completion reported at prompt
+- Test suite — 17 tests across happy path, edge cases, error handling
 
 ## Status
 
@@ -59,8 +63,8 @@ independently. Changing how input is parsed never touches execution logic.
 | M1        | Command execution — fork/exec/waitpid | Complete |
 | M2        | I/O redirection                    | Complete |
 | M3        | Pipes                              | Complete |
-| M4        | Signals and job control            | Planned  |
-| M5        | Polish, testing, Valgrind          | Planned  |
+| M4        | Signals and job control            | Complete |
+| M5        | Polish, testing, Valgrind          | Complete |
 
 ## What I learned
 - How fork and exec are separate syscalls — and why that gap exists
@@ -71,6 +75,9 @@ independently. Changing how input is parsed never touches execution logic.
   unused pipe end must be closed
 - Why strtok is not reentrant and how strtok_r solves it
 - Why builtins like cd must run in the shell process itself
+- How to design a test suite covering all 11 test types across 
+  happy path, edge cases, and error handling — and why testing 
+  behavior not implementation makes tests resilient to change
 
 ## Author
 

@@ -9,9 +9,12 @@
 #include <signal.h>
 #include "signals.h"
 #include "jobs.h"
+#include "readline/history.h" //add_history()
+#include "readline/readline.h" //readline()
+#include "string.h"
 
 int main(void){
-    char input[MAX_INPUT];
+      // char input[MAX_INPUT]; replaced by readline
     
     // myshell should not be affected by signals such as
     // Ctrl+c, Ctrl+z, and background process writing to terminal
@@ -21,12 +24,21 @@ int main(void){
     signal(SIGCHLD, sigchld_handler);
 
     while(1){
-        
-        printf(PROMPT);
-        fflush(stdout);
         print_done_jobs();
-        if(fgets(input, sizeof(input), stdin) == NULL)
+        char* input = readline("myshell>> ");
+
+        if (!input){
             break;
+        }
+        char empty[] = " \t\n";
+        size_t length = strlen(input);
+        if (length == strspn(input, empty)) {
+            free(input);
+            continue;
+        }
+
+        add_history(input);
+
         // create a copy to send to execute if it is a background job
         // we don't pass pipeline.cmds because it doesn't have the "|"
         char cmd_original[MAX_INPUT];
@@ -35,15 +47,17 @@ int main(void){
         // if command has "&" we remove it
         cmd_original[strcspn(cmd_original, "&")] = '\0';
         cmd_original[strcspn(cmd_original, "\n")] = '\0'; // strips newline
-
-        // remove the /n after user input
-        input[strcspn(input, "\n")] = '\0';
+    
 
         pipeline_t pipeline = parse_pipeline(input);
-
-        // if user entered space, enter, or tab only
-        if (pipeline.cmds[0].argv == NULL || pipeline.cmds[0].argv[0] == NULL){
-            free(pipeline.cmds[0].argv);
+        // empty input, too many command arguments, bad pipe syntax
+        if (pipeline.num_cmds == 0){
+            
+            if (pipeline.error == ERR_BAD_PIPE){
+                 fprintf(stderr, "bash: syntax error near unexpected token '|'\n");
+            }
+            
+            free(input);
             continue;
         }
 
@@ -65,9 +79,8 @@ int main(void){
         for ( int i = 0; i < pipeline.num_cmds; ++i){
             free(pipeline.cmds[i].argv);
         }
- 
 
-
+        free(input);
     }
 
 
