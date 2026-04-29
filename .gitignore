@@ -2,3 +2,6 @@ myshell
 src/*.o
 *.txt
 *.o
+*.o
+*.out
+/tmp/*
